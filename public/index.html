@@ -15,5 +15,70 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://unpkg.com/react@15/dist/react.js"></script>
     <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+
+    <!-- Create React Component -->
+    <script type="text/babel">
+      var Ninjas = React.createClass({
+        getInitialState: function () {
+          return {
+            ninjas: []
+          };
+        },
+        render: function () {
+          let ninjas = this.state.ninjas;
+          ninjas = ninjas.map((ninja, index) => {
+            return (
+              <li key={index}>
+                <span>이름 : {ninja.name} | </span>
+                <span>랭크 : {ninja.rank} | </span>
+                <span>거리 : {Math.floor(ninja.dis / 1000)}km</span>
+              </li>
+            );
+          });
+          return (
+            <div id="ninja-container">
+              <form id="search" onSubmit={this.handleSubmit}>
+                <p>
+                  <label>Enter your longitude : </label>
+                  <input
+                    type="text"
+                    ref="lng"
+                    placeholder="longitude"
+                    required
+                  />
+                </p>
+                <p>
+                  <label>Enter your latitude : </label>
+                  <input
+                    type="text"
+                    ref="lat"
+                    placeholder="latitude"
+                    required
+                  />
+                </p>
+                <input type="submit" value="Find Ninjas" />
+              </form>
+              <ul>{ninjas}</ul>
+            </div>
+          );
+        },
+        handleSubmit: function (e) {
+          e.preventDefault();
+          let lng = this.refs.lng.value;
+          let lat = this.refs.lat.value;
+
+          fetch(`/api/ninjas?lng=${lng}&lat=${lat}`)
+            .then(function (data) {
+              return data.json();
+            })
+            .then((json) => {
+              this.setState({
+                ninjas: json
+              });
+            });
+        }
+      });
+      ReactDOM.render(<Ninjas />, document.getElementById("ninjas"));
+    </script>
   </body>
 </html>
